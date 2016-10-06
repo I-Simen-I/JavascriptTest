@@ -12,6 +12,24 @@ function constructTodoList(text) {
     itemEl.appendChild(tickboxEl);
     itemEl.appendChild(textEl);
 
+    itemEl.addEventListener('click', function markAsDone(ev) {
+        let listTarget;
+        let markedAsDone = "todo todo--done";
+
+        if (ev.target.tagName === 'DIV') {
+            listTarget = ev.target.parentNode;
+        } else {
+            listTarget = ev.target;
+        }
+
+        if (listTarget.getAttribute('class') === markedAsDone) {
+            listTarget.setAttribute('class', 'todo');
+            console.log("Marked as open", listTarget);
+        } else {
+            listTarget.setAttribute('class', markedAsDone);
+            console.log("Marked as done", listTarget);
+        }
+    });
     return itemEl;
 }
 
@@ -23,7 +41,7 @@ function addTodo(text) {
 
 function addTodoOnenter(evt) {
     if (evt.keyCode === 13) {
-        console.log("enter key", evt);
+        console.log("Added todo item", evt);
         addTodo(evt.target.value);
         evt.target.select();
     }
