@@ -7,7 +7,7 @@ Link: https://nodejs.org/en/
 
 ##2. Tools
 ###2.1. IntelliJ
-2.1.1Plugins used:
+2.1.1 Plugins used:
 * NodeJS
 * scss-lint
 
