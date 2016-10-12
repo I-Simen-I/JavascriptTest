@@ -12,14 +12,24 @@
            type="text"
            class="inputbox_input"
            placeholder="Enter a todo item here"
-           autofocus="true"
+           autofocus
+           data-bind="value: inputText,
+                      valueUpdate: 'input',
+                      event: {'keydown': evt.inputEnter}"
     />
 </div>
 
-<ul id="todoList" class="todo_list"/>
+<ul id="todoList" class="todo_list" data-bind="foreach: todos">
+    <li class="todo" data-bind="css: {'todo--done': done}">
+        <div class="todo_tickbox material-icons-pseudo" data-bind="click: $root.evt.toggleDone"></div>
+        <div class="todo_text" data-bind="text: text"></div>
+    </li>
+</ul>
 
-<script src="./resources/app.js">
-    todo.startup();
+<script src="./resources/knockout.js"></script>
+<script src="resources/koTodo.js"></script>
+<script>
+    ko.applyBindings(koTodo.model);
 </script>
 </body>
 </html>
