@@ -1,8 +1,19 @@
 let koTodo = (function () {
-    function makeTodoItem(text) {
+    function getTodoItemData(todoItem) {
+        return {
+            text: todoItem.text,
+            done: todoItem.done()
+        };
+    }
+
+    function makeTodoItemFromData(todoItemData) {
+        return makeTodoItem(todoItemData.text, todoItemData.done);
+    }
+
+    function makeTodoItem(text, done) {
         return {
             text: text,
-            done: ko.observable(false)
+            done: ko.observable(!!done)
         };
     }
 
@@ -14,6 +25,48 @@ let koTodo = (function () {
         inputText: ko.observable(''),
         todos: ko.observableArray()
     };
+
+    model.data = ko.computed({
+        read: function () {
+            return {
+                inputText: model.inputText(),
+                todos: model.todos().map(getTodoItemData)
+            };
+        },
+        write: function (val) {
+            model.inputText(val.inputText);
+            model.todos(val.todos.map(makeTodoItemFromData));
+        }
+    });
+
+    let storageKey = "todoData";
+    model.data.subscribe(function (latestModel) {
+        localStorage.setItem(storageKey, JSON.stringify(latestModel));
+    });
+
+    function deleteDoneTodos() {
+        let notDoneTodos = model.todos().filter(function (todoItem) {
+            return !todoItem.done();
+        });
+        model.todos(notDoneTodos);
+    }
+
+    function deleteAllTodos() {
+        model.inputText('');
+        model.todos([]);
+    }
+
+    window.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === 67 && evt.altKey && evt.shiftKey) {
+            deleteAllTodos();
+            localStorage.clear();
+            return;
+        }
+
+        if (evt.keyCode === 67 && evt.altKey) {
+            deleteDoneTodos();
+        }
+    });
 
     model.evt = {
         inputEnter: function (model, evt) {
@@ -27,6 +80,11 @@ let koTodo = (function () {
             model.done(!model.done());
         }
     };
+
+    let potensialStorageData = localStorage.getItem(storageKey);
+    if (potensialStorageData) {
+        model.data(JSON.parse(potensialStorageData))
+    }
 
     return {
         model: model
